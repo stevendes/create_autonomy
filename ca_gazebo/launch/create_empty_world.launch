@@ -32,4 +32,9 @@
 	<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
  		  args="-urdf -model irobot_create2 -param robot_description $(arg robot_pose)" />
 
+	<!-- Visual odometry -->
+	<include file="$(find ca_visual_odometry)/launch/vo_raspicam.launch">
+		<arg name="simulation" value="false"/>
+	</include>
+
 </launch>
