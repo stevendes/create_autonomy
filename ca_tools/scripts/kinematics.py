@@ -5,9 +5,9 @@ import rospy
 import threading
 import PyKDL
 
-from geometry_msgs.msg import Twist, Pose
+from geometry_msgs.msg import Twist, Pose, Pose2D, Quaternion
 from nav_msgs.msg import Odometry
-from tf.transformations import euler_from_quaternion
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
 from gazebo_msgs.srv import GetPhysicsProperties
 from gazebo_msgs.srv import SetPhysicsProperties
 
@@ -17,8 +17,8 @@ GT_TOPIC = "/gts"
 class Kinematics(object):
     """docstring for Kinematics."""
     def __init__(self):
-        self.pose = Pose()
-        self.initial_pose = Pose()
+        self.pose = Pose2D()
+        self.last_pose = None
         self.pose_lock = threading.Lock()
         rospy.init_node("kinematics_node")
         self.vel_pub = rospy.Publisher(CMD_VEL_TOPIC, Twist, queue_size=1)
@@ -33,12 +33,8 @@ class Kinematics(object):
         twist_msg = self._twist(lin, ang)
         # Record initial pose
         self.pose_lock.acquire()
-        self.initial_pose = self.pose
+        self.pose = Pose2D()
         self.pose_lock.release()
-        ######
-        angle = self._get_yaw_from_quat(self.initial_pose.orientation)
-        rospy.loginfo("INITIAL: {}".format(math.degrees(angle)))
-        ######
         # Move robot at the specified velocity during 'duration_sec'
         now = rospy.Time.now().secs
         while (rospy.Time.now().secs - now) <= duration_sec:
@@ -46,46 +42,52 @@ class Kinematics(object):
         # Stop robot
         self.vel_pub.publish(self._twist(0, 0))
         rospy.sleep(rospy.Duration(nsecs=2000))
+        # Get final measurements
         self.pose_lock.acquire()
-        end_pose = self.pose
-        self.pose_lock.release()
-        # Get delta angle
-        ######
-        angle = self._get_yaw_from_quat(end_pose.orientation)
-        rospy.loginfo("END POSE: {}".format(math.degrees(angle)))
-        ######
-        angle = self._get_quat_diff(end_pose.orientation, self.initial_pose.orientation)
         rospy.loginfo("[{0:.3f}, {1:.3f}, {2:.3f}]".format(
-            abs(end_pose.position.x - self.initial_pose.position.x),
-            abs(end_pose.position.y - self.initial_pose.position.y),
-            math.degrees(angle)
+            self.pose.x,
+            self.pose.y,
+            math.degrees(self.pose.theta)
         ))
-        ######
-        rospy.loginfo("DIFF: {}".format(math.degrees(angle)))
-        ######
+        self.pose_lock.release()
         rospy.sleep(rospy.Duration(secs=5))
 
     def _gt_cb(self, msg):
         self.pose_lock.acquire()
-        self.pose = msg.pose.pose
+        x = msg.pose.pose.position.x
+        y = msg.pose.pose.position.y
+        o = msg.pose.pose.orientation
         self.pose_lock.release()
+        if(self.last_pose is None):
+            # First measurement
+            self.last_pose = Pose2D()
+            self.last_pose.x = x
+            self.last_pose.y = y
+            self.last_pose.theta = self._get_yaw_from_quat(o)
+        else:
+            # Other measurements
+            self.pose.x += (x - self.last_pose.x)
+            self.pose.y += (y - self.last_pose.y)
+            [qx, qy, qz, qw] = quaternion_from_euler(0, 0, self.last_pose.theta)
+            angle_diff = self._get_quat_diff(o, Quaternion(qx, qy, qz, qw))
+            self.pose.theta += angle_diff
+            # Update last pose
+            self.last_pose.x = x
+            self.last_pose.y = y
+            self.last_pose.theta = self._get_yaw_from_quat(o)
 
     def _get_quat_diff(self, q1, q0):
-        TWO_PI = 2. * math.pi
-        angle1 = self._get_yaw_from_quat(q1)
-        angle0 = self._get_yaw_from_quat(q0)
-        diff = angle1 - angle0
-        rospy.loginfo("> diff: {}".format(diff))
-        if diff >= TWO_PI:
-          diff -= TWO_PI
-        if diff < 0:
-          diff += TWO_PI
-        return diff
+        angle1 = PyKDL.Rotation.Quaternion(q1.x, q1.y, q1.z, q1.w)
+        angle0 = PyKDL.Rotation.Quaternion(q0.x, q0.y, q0.z, q0.w)
+        rot = angle1 * angle0.Inverse()
+        # get the RPY (fixed axis) from the rotation
+        [_, _, yaw] = rot.GetRPY()
+        return yaw
 
     def _get_yaw_from_quat(self, q):
         q_arr = [q.x, q.y, q.z, q.w]
-        euler = euler_from_quaternion(q_arr)
-        return euler[2]
+        [_, _, yaw] = euler_from_quaternion(q_arr)
+        return yaw
 
     def _twist(self, lin, ang):
         msg = Twist()
