@@ -9,6 +9,7 @@
     <xacro:include filename="$(find ca_description)/urdf/sensors/imu_sensor.xacro"/>
     <xacro:include filename="$(find ca_description)/urdf/sensors/wall_sensor.xacro"/>
     <xacro:include filename="$(find ca_description)/urdf/sensors/cliff_sensors.xacro"/>
+    <xacro:include filename="$(find ca_description)/urdf/sensors/ramiro_color_sensor.xacro"/>
 
     <xacro:property name="base_link_offset_z" value="0.0308"/>
     <xacro:property name="base_offset_z" value="0.017"/>
@@ -53,6 +54,8 @@
     <xacro:create_wheel prefix="left" y_offset="${wheel_separation / 2}" wheel_radius="${wheel_radius}" wheel_width="${wheel_width}"/>
     <xacro:create_wheel prefix="right" y_offset="${wheel_separation / -2}" wheel_radius="${wheel_radius}" wheel_width="${wheel_width}"/>
     <xacro:caster_wheel/>
+    <xacro:color_sensor parent="base_link" reflect="1" prefix="right"/>
+    <xacro:color_sensor parent="base_link" reflect="-1" prefix="left"/>
 
     <!-- Simulation sensors -->
     <xacro:sim_create_base/>
