@@ -54,9 +54,12 @@
     <xacro:create_wheel prefix="left" y_offset="${wheel_separation / 2}" wheel_radius="${wheel_radius}" wheel_width="${wheel_width}"/>
     <xacro:create_wheel prefix="right" y_offset="${wheel_separation / -2}" wheel_radius="${wheel_radius}" wheel_width="${wheel_width}"/>
     <xacro:caster_wheel/>
-    <xacro:color_sensor parent="base_link" reflect="1" prefix="right"/>
-    <xacro:color_sensor parent="base_link" reflect="-1" prefix="left"/>
-
+    <xacro:color_sensor parent="base_link" reflect="1" prefix="right">
+      <origin xyz="0.05 0 0" rpy="${-pi/2} 0 ${-pi/2}" />
+    </xacro:color_sensor>
+    <xacro:color_sensor parent="base_link" reflect="-1" prefix="left">
+      <origin xyz="0.05 0 0" rpy="${-pi/2} 0 ${-pi/2}" />
+    </xacro:color_sensor>
     <!-- Simulation sensors -->
     <xacro:sim_create_base/>
   </xacro:macro>
