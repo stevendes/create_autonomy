@@ -9,6 +9,7 @@
     <xacro:include filename="$(find ca_description)/urdf/sensors/imu_sensor.xacro"/>
     <xacro:include filename="$(find ca_description)/urdf/sensors/wall_sensor.xacro"/>
     <xacro:include filename="$(find ca_description)/urdf/sensors/cliff_sensors.xacro"/>
+    <xacro:include filename="$(find ca_description)/urdf/color_sensor.xacro"/>
 
     <xacro:property name="base_link_offset_z" value="0.0308"/>
     <xacro:property name="base_offset_z" value="0.017"/>
@@ -43,6 +44,21 @@
         </geometry>
       </collision>
     </link>
+
+    <xacro:property name="diameter" value="0.3485"/>
+    <xacro:property name="size_z" value="0.1"/>
+
+    
+
+    <!-- Introducing color sensors in each side -->
+
+    <xacro:color_sensor prefix="left" parent="base_link" color="yellow">
+      <origin xyz="${diameter/2 * 0.5 + 0.03} ${diameter/2 * 0.84 } ${size_z}" rpy="0 ${pi/2} 0" />
+    </xacro:color_sensor>
+
+    <xacro:color_sensor prefix="right" parent="base_link" color="white">
+      <origin xyz="${diameter/2 * 0.5 + 0.05} ${-(diameter/2 * 0.63 )} ${size_z}" rpy="0 ${pi/2} 0"/>
+    </xacro:color_sensor> 
 
     <xacro:wall_sensor visualize="${visualize}"/>
     <xacro:cliff_sensors visualize="${visualize}"/>
