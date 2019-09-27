@@ -24,10 +24,12 @@ else()
 			ca_msgs
 	)
 
-	link_directories(${GAZEBO_LIBRARY_DIRS})
-  include_directories(include
+link_directories(${GAZEBO_LIBRARY_DIRS})
+
+include_directories(include
     ${catkin_INCLUDE_DIRS}
-		${GAZEBO_INCLUDE_DIRS}
+	${GAZEBO_INCLUDE_DIRS}
+	${Boost_INCLUDE_DIR}
   )
 
 	add_library(create_bumper_plugin src/create_bumper_plugin.cpp)
@@ -35,6 +37,11 @@ else()
 	target_link_libraries(create_bumper_plugin
 				${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+	add_library(color_sensor_plugin src/color_sensor_plugin.cpp)
+	add_dependencies(color_sensor_plugin ${catkin_EXPORTED_TARGETS})
+	target_link_libraries(color_sensor_plugin
+				${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+	
   install(DIRECTORY launch worlds models
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 

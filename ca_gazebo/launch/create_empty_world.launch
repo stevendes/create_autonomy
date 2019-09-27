@@ -30,7 +30,7 @@
 
   <!-- map_server -->
   <include file="$(find ca_move_base)/launch/map_server.launch">
-	<arg name="env" value="$(arg env)"/>
+	<arg name="env" value="empty"/>
   </include>
 
 </launch>
