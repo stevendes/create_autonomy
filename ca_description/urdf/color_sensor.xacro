@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+<xacro:property name="size_z" value="0.07"/>
+
+
+<xacro:macro name="color_sensor" params="prefix side">
+ <joint name="${prefix}_c_joint" type="fixed">
+    <origin xyz="0 ${side/2} ${size_z/2}" rpy="0 ${pi/2} 0" />
+    <parent link="base_link" />
+    <child link="${prefix}_c_link" />
+  </joint>
+
+
+  <link name="${prefix}_c_link">
+    <xacro:dummy_inertia/>
+    <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+  	       <box size="0.015 0.015 0.015"/>
+        </geometry>
+      </visual>
+  </link>
+
+ <joint name="${prefix}_c_optical" type="fixed">
+    <origin xyz="0 0 0" rpy="${pi*3/2} 0 ${pi*3/2}" />
+    <parent link="${prefix}_c_link" />
+    <child link="${prefix}_c_optical_link" />
+  </joint>
+
+  <link name="${prefix}_c_optical_link">
+    <xacro:dummy_inertia/>
+  </link>
+
+</xacro:macro>  
+
+</robot>
+    
+
+
+
+

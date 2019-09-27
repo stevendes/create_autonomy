@@ -1,0 +1,7 @@
+<launch>
+
+  <node pkg="ca_tools" type="pos_controller_pid.py" name="pos_controller_pid" output="screen"/>
+
+  <node pkg="ca_tools" type="path.py" name="path" output="screen"/>
+
+</launch>
