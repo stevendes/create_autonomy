@@ -1,10 +1,12 @@
 # Goal
-int32 amount
-
+int32 goal_seconds
+geometry_msgs/Point goal_position
 ---
 # Result
-string[] final_result
-
+bool goal_achieved
+duration total_time
 ---
 # Feedback
-int32 number_of_minutes
+duration current_time
+float64 accumulated_distance
+int32 times_oop

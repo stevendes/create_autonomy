@@ -4,6 +4,7 @@ project(ca_tools)
 find_package(catkin REQUIRED
   actionlib_msgs
   message_generation
+  geometry_msgs
   )
 
 add_action_files(
@@ -14,6 +15,7 @@ add_action_files(
 generate_messages(
   DEPENDENCIES
   actionlib_msgs
+  geometry_msgs
 )
 
 catkin_package(

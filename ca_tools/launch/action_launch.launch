@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="ca_tools" type="action_client.py" name="action_client"/>
+  <node pkg="ca_tools" type="action_server.py" name="action_server"/>
+  <node pkg="ca_tools" type="robot_controller.py" name="robot_controller"/>
+</launch>
