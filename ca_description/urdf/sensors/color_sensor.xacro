@@ -3,7 +3,7 @@
   <xacro:include filename="$(find ca_description)/urdf/sensors/laser_sensor_gazebo.xacro"/>
   <xacro:include filename="$(find ca_description)/urdf/common_properties.xacro"/>
 
-  <xacro:macro name="color_sensor" params="prefix reflect parent visualize:=false *origin">  
+  <xacro:macro name="color_sensor" params="prefix parent visualize:=false *origin1 **origin2">  
     <xacro:property name="parent_link" value="${parent}"/>
     <xacro:property name="color_sensor_len" value="0.05"/>
 
@@ -18,11 +18,11 @@
     <joint name="base_to_${prefix}_color_sensor" type="fixed">
         <parent link="${parent_link}"/>
         <child link="${prefix}_color_sensor"/>
-        <origin xyz="0.18 ${reflect*(.08)} 0.1"  rpy="0 ${0.7*(pi/2)} ${reflect}"/>
+        <xacro:insert_block name="origin1" />
     </joint>
 
     <joint name="${prefix}_color_optical_joint" type="fixed">
-      <xacro:insert_block name="origin" />
+      <xacro:insert_block name="origin2" />
       <parent link="${prefix}_color_sensor" />
       <child link="${prefix}_color_optical_frame"/>
     </joint>
