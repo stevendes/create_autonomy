@@ -12,10 +12,14 @@
 
   <author email="jperron@sfu.ca">Jacob Perron</author>
 
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>geometry_msgs</depend>
   <depend>rospy</depend>
+  <depend>actionlib_msgs</depend>
+
 
   <exec_depend>joy</exec_depend>
   <exec_depend>joy_teleop</exec_depend>

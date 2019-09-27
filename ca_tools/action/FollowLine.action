@@ -1,0 +1,10 @@
+# Goal
+int32 amount
+
+---
+# Result
+string[] final_result
+
+---
+# Feedback
+int32 number_of_minutes
