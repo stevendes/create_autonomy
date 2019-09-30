@@ -4,8 +4,7 @@
 
   <xacro:macro name="color_sensor" params="prefix parent visualize:=false *origin1 **origin2">  
     <xacro:property name="parent_link" value="${parent}"/>
-    <xacro:property name="color_sensor_len" value="0.05"/>
-
+    
     <link name="${prefix}_color_sensor">
         <visual>
             <geometry>
