@@ -16,6 +16,7 @@
 #include <sensor_msgs/Illuminance.h>
 
 #define COLOR_TOLERANCE 30
+#define PIXEL_THRESHOLD 100 //minimum amount of pixels where the sensor returns true
 
 namespace gazebo
 {
@@ -61,11 +62,23 @@ namespace gazebo
     this->depth_ = this->depth;
     this->format_ = this->format;
     this->camera_ = this->camera;
-    this->publish_topic_name_ = _sdf-> Get<std::string>("publishTopic");
-    this->sensor_color_ = _sdf-> Get<std::string>("sensorColor");
+    this->publish_topic_name_ = _sdf-> Get<std::string>("publish_topic");
+    this->sensor_color_ = _sdf-> Get<std::string>("sensor_color");
     this->update_rate_ = atof(_sdf-> Get<std::string>("update_rate").c_str());
     _sensorPublisher = _nh.advertise<std_msgs::Bool>(this->publish_topic_name_, 1);
-    
+
+    if (this->sensor_color_=="white")
+    {
+      this->target_color_[0]=255;
+      this->target_color_[1]=255;
+      this->target_color_[2]=255;
+    }
+    if (this->sensor_color_=="yellow")
+    {
+      this->target_color_[0]=255;
+      this->target_color_[1]=255;
+      this->target_color_[2]=0;
+    }
     this->parentSensor_->SetActive(true);
   }
 
@@ -84,10 +97,10 @@ namespace gazebo
     this->sensor_update_time_ = this->parentSensor_->LastUpdateTime();
     this->update_period_=common::Time(1/this->update_rate_).Double();
     if (cur_time.Double() - this->last_update_time_.Double() >= this->update_period_){
-      ROS_INFO("ENTRE");
       this->last_update_time_=cur_time;
       this->PutCameraData(_image);
       this->PublishCameraInfo();
+
 
     for (int i=0;i<_width;i++)
     {
@@ -96,30 +109,16 @@ namespace gazebo
         r=_image[startingPixel];
         g=_image[startingPixel+(unsigned char) 1];
         b=_image[startingPixel+(unsigned char) 2];
-        
-      if (this->sensor_color_=="yellow")
-      {
-        if(r >= (255-COLOR_TOLERANCE) && (g >= 255-COLOR_TOLERANCE) && (b<=2*COLOR_TOLERANCE))
+              
+        if(abs(r-this->target_color_[0]) <= COLOR_TOLERANCE && abs(g-this->target_color_[1]) <= COLOR_TOLERANCE && abs(b-this->target_color_[2]) <= COLOR_TOLERANCE)
         {
           count++;
         }
-      }else if (this->sensor_color_=="white")
-      {
-        if (r >= (255-COLOR_TOLERANCE) && (g >= 255-COLOR_TOLERANCE) && (b>=255-COLOR_TOLERANCE))
-        {
-          count++;
-        }
-      }
+      
       startingPixel+=(unsigned char) 3;
       }
     }
-    if (count>100)
-    {
-      msg.data=true;
-    }else{
-      msg.data=false;
-    }
-    msg.data=count;
+    msg.data=count>PIXEL_THRESHOLD;
     _sensorPublisher.publish(msg);
     this->sensor_update_time_ = this->parentSensor_->LastUpdateTime();
     }

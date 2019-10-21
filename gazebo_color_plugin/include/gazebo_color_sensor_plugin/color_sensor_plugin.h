@@ -34,6 +34,7 @@
         std::string publish_topic_name_;
         double _fov;
         double _range;
+        unsigned char target_color_[3];
       };
     }
     #endif
