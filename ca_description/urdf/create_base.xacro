@@ -56,11 +56,11 @@
     <xacro:caster_wheel/>
 
     <xacro:color_sensor parent="base_link" name_prefix="left" color="yellow">
-      <origin xyz="0.18 .08 0.1"  rpy="0 ${0.7*(pi/2)} 1"/>
+      <origin xyz="0.18 .11 0.15"  rpy="0 ${(pi/2)} 0"/>
     </xacro:color_sensor>
 
     <xacro:color_sensor parent="base_link" name_prefix="right" color="white">
-      <origin xyz="0.18 -.08 0.1"  rpy="0 ${0.7*(pi/2)} -1"/>
+      <origin xyz="0.18 -.11 0.15"  rpy="0 ${(pi/2)} 0"/>
     </xacro:color_sensor>
     <!-- Simulation sensors -->
     <xacro:sim_create_base/>
