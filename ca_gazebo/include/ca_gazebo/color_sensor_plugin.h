@@ -14,27 +14,32 @@
       {
         /// \brief Constructor
         /// \param parent The parent entity, must be a Model or a Sensor
-        public: GazeboRosColor();
+        public:
+        GazeboRosColor();
     
         /// \brief Destructor
-        public: ~GazeboRosColor();
+        ~GazeboRosColor();
     
         /// \brief Load the plugin
         /// \param take in SDF root element
-        public: void Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf);
+        void Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf);
+        bool IsColor(std::array<unsigned char, 3>, unsigned char r, unsigned char g, unsigned char b);
     
         /// \brief Update the controller
-        protected: virtual void OnNewFrame(const unsigned char *_image,
+        protected:
+        
+        virtual void OnNewFrame(const unsigned char *_image,
         unsigned int _width, unsigned int _height,
-        unsigned int _depth, const std::string &_format);
-    
+        unsigned int _depth, const std::string &_format);    
         ros::NodeHandle _nh;
         ros::Publisher _sensorPublisher;
         std::string sensor_color_;
         std::string publish_topic_name_;
         double _fov;
         double _range;
-        unsigned char target_color_[3];
+        std::map<std::string, std::array<unsigned char, 3>> _map_of_colors;
+        const int COLOR_TOLERANCE = 30;  //tolerance between target colour and the pixel
+        const int PIXEL_THRESHOLD = 100; //minimum amount of pixels where the sensor returns true
       };
     }
     #endif
