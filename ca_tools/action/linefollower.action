@@ -7,8 +7,9 @@ uint32 times_oop
 ---
 # Part 2: the result, sent by action server unpon completion
 #
-# How much time used
+# Result, true if successful, false if doesn't
 bool result
+Total time spent by the robot to complete the goal
 duration total_time
 
 ---
@@ -16,5 +17,5 @@ duration total_time
 #
 # The amount of time elapsed from the start
 duration time_elapsed
-# How many updates thrown in total
+# How much distance has the robot moved
 float32 distance_moved
