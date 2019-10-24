@@ -31,13 +31,13 @@ else()
   )
 
 	add_library(create_bumper_plugin src/create_bumper_plugin.cpp)
-	add_library(${PROJECT_NAME} src/color_plugin.cpp)
+	add_library(create_color_plugin src/color_plugin.cpp)
 	add_dependencies(create_bumper_plugin ${catkin_EXPORTED_TARGETS})
-	add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+	add_dependencies (create_color_plugin ${catkin_EXPORTED_TARGETS})
 	target_link_libraries(create_bumper_plugin
 				${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 				
-	target_link_libraries( ${PROJECT_NAME} ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} CameraPlugin )
+	target_link_libraries(create_color_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} CameraPlugin )
 
   install(DIRECTORY launch worlds models
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

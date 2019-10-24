@@ -40,7 +40,7 @@
            <far>10</far>
          </clip>
        </camera>
-       <plugin name="gazebo_light_sensor_plugin" filename="libgazebo_color_plugin.so">
+       <plugin name="gazebo_light_sensor_plugin" filename="libcreate_color_plugin.so">
          <publish_topic>${name_prefix}_color_sensor</publish_topic>
          <sensor_color>${color}</sensor_color>
          <cameraName>${name_prefix}</cameraName>

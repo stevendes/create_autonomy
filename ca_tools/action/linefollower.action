@@ -1,0 +1,20 @@
+# Part 1: the goal.
+#
+# The maximum duration and the maximum out-of-path times 
+# in order to get a positive result
+float32 duration_threshold
+uint32 times_oop
+---
+# Part 2: the result, sent by action server unpon completion
+#
+# How much time used
+bool result
+duration total_time
+
+---
+# Part 3: the feedback,to be sent periodically by server
+#
+# The amount of time elapsed from the start
+duration time_elapsed
+# How many updates thrown in total
+float32 distance_moved
