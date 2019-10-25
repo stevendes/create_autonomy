@@ -9,7 +9,7 @@ uint32 times_oop
 #
 # Result, true if successful, false if doesn't
 bool result
-Total time spent by the robot to complete the goal
+# Total time spent by the robot to complete the goal
 duration total_time
 
 ---

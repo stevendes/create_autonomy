@@ -43,7 +43,7 @@ class LineFollowerActionServer(object):
         self._times_oop = 0
         self._times_oop_threshold = 0
         self._starting_time = rospy.Time.now()
-        # suscribers and publishers1)
+        # suscribers and publishers
         self._my_vel_pub = rospy.Publisher(
             self.VEL_PUB_TOPIC, Twist, queue_size=10)
 

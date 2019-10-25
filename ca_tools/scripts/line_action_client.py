@@ -26,7 +26,8 @@ if __name__ == '__main__':
         rospy.init_node('lineclient')
 
         result = line_follower_client()
-        rospy.loginfo("THE RESULT WAS : %r , AND THE TOTAL TIME WAS %d",
-                      result.result, result.total_time.to_sec())
+        return_string = "Success! :)" if result.result else "Failure :'("
+        rospy.loginfo("THE RESULT WAS : %s , AND THE TOTAL TIME WAS %d seconds",
+                      return_string, result.total_time.to_sec())
     except rospy.ROSInterruptException:
         pass
