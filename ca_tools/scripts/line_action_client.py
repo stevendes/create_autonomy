@@ -12,7 +12,7 @@ def line_follower_client():
 
     client.wait_for_server()   #wait until the server is up
 
-    goal = ca_tools.msg.linefollowerGoal(duration_threshold=5000, times_oop=50) # create a sample goal
+    goal = ca_tools.msg.linefollowerGoal(duration_threshold=50, times_oop=50) # create a sample goal
 
     client.send_goal(goal) #send it to the server
 

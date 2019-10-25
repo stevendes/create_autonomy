@@ -17,7 +17,7 @@ class LineFollowerActionServer(object):
 
     _feedback = ca_tools.msg.linefollowerFeedback()
     _result = ca_tools.msg.linefollowerResult()
-    LINEAR_VEL = 0.1  # linear vel
+    LINEAR_VEL = 0.2  # linear vel
     ANGULAR_VEL = 0.2
     VEL_PUB_TOPIC = "/create1/cmd_vel"
     RIGHT_SENSOR_SUB_TOPIC = "/color_sensor_plugin/right_color_sensor"
@@ -143,15 +143,22 @@ class LineFollowerActionServer(object):
         rospy.loginfo("Starting the line-following race")
 
         # start executing the action
-        while ((self.distance_to_goal() > self.distance_tolerance)
-                and (self._feedback.time_elapsed < self._duration_threshold)
-                and (self._times_oop < self._times_oop_threshold)):
+        while (self.distance_to_goal() > self.distance_tolerance):
             # check that preempt has not been requested by the client
             if self._as.is_preempt_requested():
                 rospy.loginfo('%s: Preempted' % self._action_name)
                 self._as.set_preempted()
                 success = False
                 break
+
+            if (self._feedback.time_elapsed > self._duration_threshold):
+                self._result.result = False
+                self._result.total_time = rospy.Time.now() - self._starting_time
+                self._as.set_preempted(self._result)
+                rospy.loginfo('%s: Preemted, because the mission lasted more than expected' % self._action_name)
+                success = False
+                break
+
 
             self._feedback.time_elapsed = rospy.Time.now()-self._starting_time
             self._feedback.distance_moved = self._accumulated_distance
@@ -160,19 +167,22 @@ class LineFollowerActionServer(object):
             r.sleep() # repeate every 1 sec
 
         if success:
-            self._stop_moving()
-            self._move_flag = False
+
             self._result.total_time = rospy.Time.now() - self._starting_time
             rospy.loginfo('%s: Succeeded', self._action_name)
             self._result.result = True
             self._as.set_succeeded(self._result)
+        
+        self._stop_moving()
+        self._move_flag = False
+        
 
 
 if __name__ == '__main__':
 
     rospy.init_node('linefollower')
     server = LineFollowerActionServer(rospy.get_name())
-    rate = rospy.Rate(20)
+    rate = rospy.Rate(100)
     while(not rospy.is_shutdown()):
         server.move()
         rate.sleep()
