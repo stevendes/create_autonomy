@@ -22,16 +22,14 @@ GZ_REGISTER_SENSOR_PLUGIN(GazeboRosColor)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructor
-GazeboRosColor::GazeboRosColor() : _nh("color_sensor_plugin"),
+GazeboRosColor::GazeboRosColor() : nh_("color_sensor_plugin"),
                                    _fov(6),
                                    _range(10),
                                    CameraPlugin(),
                                    GazeboRosCameraUtils()
 
 {
-  //add the colours to the std::map
-  //this->_map_of_colors.insert(std::make_pair("white", my_color{255, 255, 255}));
-  //this->_map_of_colors.insert(std::make_pair("yellow", my_color{255, 255, 0}));
+
 }
 
 GazeboRosColor::~GazeboRosColor()
@@ -65,7 +63,7 @@ void GazeboRosColor::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
   this->publish_topic_name_ = _sdf->Get<std::string>("publish_topic");
   this->sensor_color_ = _sdf->Get<std::string>("sensor_color");
   this->update_rate_ = _sdf->Get<double>("update_rate");
-  _sensorPublisher = _nh.advertise<std_msgs::Bool>(this->publish_topic_name_, 1);
+  sensor_publisher_ = nh_.advertise<std_msgs::Bool>(this->publish_topic_name_, 1);
 
   this->update_period_ = common::Time(1 / this->update_rate_).Double();
   this->parentSensor_->SetActive(true);
@@ -78,7 +76,7 @@ void GazeboRosColor::OnNewFrame(const unsigned char *_image,
 {
  
   const common::Time cur_time = this->world_->SimTime();
-  const my_color target_color = this->_map_of_colors.at(this->sensor_color_);
+  const my_color target_color = this->map_of_colors_.at(this->sensor_color_);
 
   if (cur_time.Double() - this->last_update_time_.Double() >= this->update_period_)
   {
@@ -105,7 +103,7 @@ void GazeboRosColor::OnNewFrame(const unsigned char *_image,
       }
     }
     msg->data = count > PIXEL_THRESHOLD;
-    _sensorPublisher.publish(msg);
+    sensor_publisher_.publish(msg);
   }
 }
 } // namespace gazebo

@@ -61,14 +61,14 @@ protected:
                           unsigned int _width, unsigned int _height,
                           unsigned int _depth, const std::string &_format);
 
-  ros::NodeHandle _nh;
-  ros::Publisher _sensorPublisher;
+  ros::NodeHandle nh_;
+  ros::Publisher sensor_publisher_;
   std::string sensor_color_;
   std::string publish_topic_name_;
   double _fov;
   double _range;
 // Initialize a Map of string & vector of int using initializer_list
-  const std::map<std::string, my_color > _map_of_colors = 	{
+  const std::map<std::string, my_color > map_of_colors_ = 	{
 							{ "white", {255, 255, 255} },
 							{ "yellow", {255, 255, 0} }
 							};
