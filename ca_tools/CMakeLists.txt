@@ -1,17 +1,19 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(ca_tools)
 
-find_package(catkin REQUIRED COMPONENTS actionlib_msgs)
+find_package(catkin REQUIRED COMPONENTS actionlib_msgs sensor_msgs)
+
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_action_files(
   DIRECTORY action
-  FILES linefollower.action
-)
+  )
  
 generate_messages(
-DEPENDENCIES
-actionlib_msgs
-std_msgs
+  DEPENDENCIES
+  actionlib_msgs
+  std_msgs
+  sensor_msgs
 )
 
 catkin_package(
@@ -21,6 +23,8 @@ catkin_package(
     rospy
     actionlib_msgs
     std_msgs
+    cv_bridge
+    sensor_msgs
 )
 
 

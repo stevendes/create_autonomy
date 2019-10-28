@@ -1,0 +1,7 @@
+<launch>
+    <arg name="times_oop" default="$(optenv TIMES_OOP 10)"/>
+    <arg name="duration_threshold" default="$(optenv DUR_THRESHOLD 250.0)"/>
+    <param name="times_oop" type="int" value="$(arg times_oop)" />  
+    <param name="duration_threshold" type="double" value="$(arg duration_threshold)" />
+    <node pkg="ca_tools" type="line_action_client.py" name="line_action_client" output="screen"/>
+</launch>

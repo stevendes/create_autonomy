@@ -30,8 +30,8 @@ GazeboRosColor::GazeboRosColor() : _nh("color_sensor_plugin"),
 
 {
   //add the colours to the std::map
-  this->_map_of_colors.insert(std::make_pair("white", std::array<unsigned char, 3>{255, 255, 255}));
-  this->_map_of_colors.insert(std::make_pair("yellow", std::array<unsigned char, 3>{255, 255, 0}));
+  //this->_map_of_colors.insert(std::make_pair("white", my_color{255, 255, 255}));
+  //this->_map_of_colors.insert(std::make_pair("yellow", my_color{255, 255, 0}));
 }
 
 GazeboRosColor::~GazeboRosColor()
@@ -39,9 +39,10 @@ GazeboRosColor::~GazeboRosColor()
   ROS_DEBUG_STREAM_NAMED("camera", "Unloaded");
 }
 
-bool GazeboRosColor::IsColor(std::array<unsigned char, 3> target, unsigned char r, unsigned char g, unsigned char b)
+bool GazeboRosColor::IsColor(const my_color &target, const my_color &color)
 {
-  return (abs(r - target[0]) <= COLOR_TOLERANCE and abs(g - target[1]) <= COLOR_TOLERANCE && abs(b - target[2]) <= COLOR_TOLERANCE);
+  return (abs(color[0] - target[0]) <= COLOR_TOLERANCE and abs(color[1] - target[1]) <= 
+  COLOR_TOLERANCE && abs(color[2] - target[2]) <= COLOR_TOLERANCE);
 }
 
 void GazeboRosColor::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
@@ -59,7 +60,6 @@ void GazeboRosColor::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
   this->parentSensor_ = this->parentSensor;
   this->width_ = this->width;
   this->height_ = this->height;
-  this->depth_ = this->depth;
   this->format_ = this->format;
   this->camera_ = this->camera;
   this->publish_topic_name_ = _sdf->Get<std::string>("publish_topic");
@@ -69,39 +69,40 @@ void GazeboRosColor::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
 
   this->update_period_ = common::Time(1 / this->update_rate_).Double();
   this->parentSensor_->SetActive(true);
+  this->last_update_time_ = this->world_->SimTime();
 }
 
 void GazeboRosColor::OnNewFrame(const unsigned char *_image,
                                 unsigned int _width, unsigned int _height, unsigned int _depth,
                                 const std::string &_format)
 {
-  int count = 0;
-
-  std_msgs::Bool msg;
-  unsigned char starting_pixel = 0;
-  unsigned char r, g, b;
-  common::Time cur_time = this->world_->SimTime();
+ 
+  const common::Time cur_time = this->world_->SimTime();
+  const my_color target_color = this->_map_of_colors.at(this->sensor_color_);
 
   if (cur_time.Double() - this->last_update_time_.Double() >= this->update_period_)
   {
+    int count = 0;
+    unsigned char starting_pixel = 0;
+    std_msgs::Bool msg;
     this->last_update_time_ = cur_time;
     this->PutCameraData(_image);
-    this->PublishCameraInfo();
+    my_color rgb;
 
     for (int row = 0; row < _width; row++)
     {
       for (int col = 0; col < _height; col++)
       {
-        r = _image[starting_pixel];
-        g = _image[starting_pixel + (unsigned char)1];
-        b = _image[starting_pixel + (unsigned char)2];
+        rgb[0] = _image[starting_pixel];
+        rgb[1] = _image[starting_pixel + 1];
+        rgb[2] = _image[starting_pixel + 2];
 
-        if (this->IsColor(this->_map_of_colors[this->sensor_color_], r, g, b))
+        if (this->IsColor(target_color, rgb))
         {
           count++;
         }
 
-        starting_pixel += (unsigned char)3;
+        starting_pixel += 3;
       }
     }
     msg.data = count > PIXEL_THRESHOLD;

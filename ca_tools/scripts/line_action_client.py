@@ -9,16 +9,20 @@ def line_follower_client():
 
     client = actionlib.SimpleActionClient(
         'linefollower', ca_tools.msg.linefollowerAction)
+    
+    _duration_threshold = rospy.get_param("duration_threshold")
+    _times_oop = rospy.get_param("times_oop")
+    #wait until the server is up
+    client.wait_for_server()
 
-    client.wait_for_server()   #wait until the server is up
-
-    goal = ca_tools.msg.linefollowerGoal(duration_threshold=50, times_oop=50) # create a sample goal
-
-    client.send_goal(goal) #send it to the server
-
-    client.wait_for_result() #wait until result is ready
-
-    return client.get_result() #return the result
+    # create a sample goal
+    goal = ca_tools.msg.linefollowerGoal(duration_threshold=_duration_threshold, times_oop=_times_oop)
+    #send it to the server
+    client.send_goal(goal)
+    #wait until result is ready
+    client.wait_for_result() 
+    #return the result
+    return client.get_result() 
 
 
 if __name__ == '__main__':

@@ -14,10 +14,10 @@ class LineFollowerActionServer(object):
     """A class that implements an action server, in order to
     make the robot follow two lines
     """
-
+    IS_RED_TOPIC = "/isred"
     _feedback = ca_tools.msg.linefollowerFeedback()
     _result = ca_tools.msg.linefollowerResult()
-    LINEAR_VEL = 0.2  # linear vel
+    LINEAR_VEL = 0.1  # linear vel
     ANGULAR_VEL = 0.2
     VEL_PUB_TOPIC = "/create1/cmd_vel"
     RIGHT_SENSOR_SUB_TOPIC = "/color_sensor_plugin/right_color_sensor"
@@ -49,10 +49,12 @@ class LineFollowerActionServer(object):
 
         self._my_right_sensor_sub = rospy.Subscriber(
             self.RIGHT_SENSOR_SUB_TOPIC, Bool, self._right_sensor_callback)
-
+        self._is_red_sub = rospy.Subscriber(
+            self.IS_RED_TOPIC, Bool, self._is_red_callback)
         self._my_left_sensor_sub = rospy.Subscriber(
             self.LEFT_SENSOR_SUB_TOPIC, Bool, self._left_sensor_callback)
 
+        self._has_reached_goal = False
         self._is_left_detected = False
         self._is_right_detected = False
         self._move_flag = False
@@ -63,6 +65,12 @@ class LineFollowerActionServer(object):
         self._current_pose = data.pose.pose
         self._accumulated_distance += math.hypot(self._last_pose.position.x - self._current_pose.position.x,
                                                  self._last_pose.position.y - self._current_pose.position.y)
+
+    def _is_red_callback(self, data):
+        if data.data:
+            self._has_reached_goal = True
+            return
+        self._has_reached_goal = False
 
     def _left_sensor_callback(self, data):
         self._is_left_detected = data.data
@@ -113,14 +121,6 @@ class LineFollowerActionServer(object):
             aux.linear.x = 0
             self._my_vel_pub.publish(aux)
 
-    def distance_to_goal(self):
-        """Returns eculidean distance to the goal
-        
-        Returns:
-            [float] -- [Distance to goal in meters]
-        """
-        return math.hypot(self._current_pose.position.x - self._goal.x,
-                          self._current_pose.position.y - self._goal.y)
 
     def execute_cb(self, goal):
         """Function to be called when a goal is recieved
@@ -129,7 +129,7 @@ class LineFollowerActionServer(object):
             goal {[ca_tools.msg.linefollowerGoal]} -- [Goal message]
         """
         # helper variables
-        r = rospy.Rate(1)
+        r = rospy.Rate(10)
         success = True
         self._accumulated_distance = 0.0
         self._move_flag = True
@@ -143,7 +143,7 @@ class LineFollowerActionServer(object):
         rospy.loginfo("Starting the line-following race")
 
         # start executing the action
-        while (self.distance_to_goal() > self.distance_tolerance):
+        while (not self._has_reached_goal):
             # check that preempt has not been requested by the client
             if self._as.is_preempt_requested():
                 rospy.loginfo('%s: Preempted' % self._action_name)
@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
     rospy.init_node('linefollower')
     server = LineFollowerActionServer(rospy.get_name())
-    rate = rospy.Rate(100)
+    rate = rospy.Rate(20)
     while(not rospy.is_shutdown()):
         server.move()
         rate.sleep()
