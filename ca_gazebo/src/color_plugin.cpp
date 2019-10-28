@@ -84,9 +84,8 @@ void GazeboRosColor::OnNewFrame(const unsigned char *_image,
   {
     int count = 0;
     unsigned char starting_pixel = 0;
-    std_msgs::Bool msg;
+    std_msgs::BoolPtr msg(new std_msgs::Bool);
     this->last_update_time_ = cur_time;
-    this->PutCameraData(_image);
     my_color rgb;
 
     for (int row = 0; row < _width; row++)
@@ -94,7 +93,7 @@ void GazeboRosColor::OnNewFrame(const unsigned char *_image,
       for (int col = 0; col < _height; col++)
       {
         rgb[0] = _image[starting_pixel];
-        rgb[1] = _image[starting_pixel + 1];
+        rgb[1] = _image[starting_pixel + 1];  
         rgb[2] = _image[starting_pixel + 2];
 
         if (this->IsColor(target_color, rgb))
@@ -105,7 +104,7 @@ void GazeboRosColor::OnNewFrame(const unsigned char *_image,
         starting_pixel += 3;
       }
     }
-    msg.data = count > PIXEL_THRESHOLD;
+    msg->data = count > PIXEL_THRESHOLD;
     _sensorPublisher.publish(msg);
   }
 }

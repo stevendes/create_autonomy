@@ -40,13 +40,12 @@
            <far>10</far>
          </clip>
        </camera>
-       <plugin name="gazebo_light_sensor_plugin" filename="libcreate_color_plugin.so">
+       <plugin name="gazebo_color_sensor_plugin" filename="libcreate_color_plugin.so">
          <publish_topic>${name_prefix}_color_sensor</publish_topic>
          <sensor_color>${color}</sensor_color>
          <cameraName>${name_prefix}</cameraName>
          <always_on>true</always_on>
          <update_rate>60</update_rate>
-         <imageTopicName>rgb/image_raw</imageTopicName>
          <baseline>0.1</baseline>
          <distortion_k1>0.0</distortion_k1>
          <distortion_k2>0.0</distortion_k2>
