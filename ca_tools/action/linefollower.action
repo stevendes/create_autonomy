@@ -1,0 +1,21 @@
+# Part 1: the goal.
+#
+# The maximum duration and the maximum out-of-path times 
+# in order to get a positive result
+float32 duration_threshold
+uint32 times_oop
+---
+# Part 2: the result, sent by action server unpon completion
+#
+# Result, true if successful, false if doesn't
+bool result
+# Total time spent by the robot to complete the goal
+duration total_time
+
+---
+# Part 3: the feedback,to be sent periodically by server
+#
+# The amount of time elapsed from the start
+duration time_elapsed
+# How much distance has the robot moved
+float32 distance_moved
