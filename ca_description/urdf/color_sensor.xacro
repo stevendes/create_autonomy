@@ -32,12 +32,12 @@
        <camera name='${prefix}_cam'>
          <horizontal_fov>1.047</horizontal_fov>
          <image>
-           <width>320</width>
-           <height>240</height>
+           <width>20</width>
+           <height>40</height>
          </image>
          <clip>
            <near>0.1</near>
-           <far>100</far>
+           <far>10</far>
          </clip>
        </camera>
        <plugin name="color_sensor_plugin" filename="libcolor_sensor_plugin.so">
@@ -50,23 +50,22 @@
          <frameName>${prefix}_camera_optical_frame</frameName>
          <xacro:if value="${color == 'yellow'}">
           <rvalue_max>255</rvalue_max>
-          <rvalue_min>230</rvalue_min>
+          <rvalue_min>240</rvalue_min>
           <gvalue_max>255</gvalue_max>
-          <gvalue_min>230</gvalue_min>
+          <gvalue_min>240</gvalue_min>
           <bvalue_max>140</bvalue_max>
-          <bvalue_min>0</bvalue_min>
-          <PublisherName>${prefix}_sensor</PublisherName>
+          <bvalue_min>10</bvalue_min>
          </xacro:if>
          <xacro:if value="${color == 'white'}">
           <rvalue_max>255</rvalue_max>
-          <rvalue_min>230</rvalue_min>
+          <rvalue_min>240</rvalue_min>
           <gvalue_max>255</gvalue_max>
-          <gvalue_min>230</gvalue_min>
+          <gvalue_min>240</gvalue_min>
           <bvalue_max>255</bvalue_max>
-          <bvalue_min>230</bvalue_min>
-          <PublisherName>${prefix}_${color}_sensor</PublisherName>
+          <bvalue_min>240</bvalue_min>
          </xacro:if>
-         <ColorPercentage>0.08</ColorPercentage>
+         <PublisherName>${prefix}_sensor</PublisherName>
+         <ColorPercentage>0.070</ColorPercentage>
          <baseline>0.1</baseline>
          <distortion_k1>0.0</distortion_k1>
          <distortion_k2>0.0</distortion_k2>
