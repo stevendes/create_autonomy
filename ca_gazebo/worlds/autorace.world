@@ -25,7 +25,7 @@
     <include>
       <uri>model://create_autorace/toll</uri>
       <pose> 1.4 0.25 0.1 0 0 0</pose>
-    </include>
+    </include> 
 
     <include>
       <uri>model://create_autorace/traffic_stop</uri>

@@ -42,6 +42,9 @@ include_directories(include
 	target_link_libraries(color_sensor_plugin
 				${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 	
+	add_library(toll_plugin src/toll_plugin.cpp)
+	target_link_libraries(toll_plugin ${GAZEBO_LIBRARIES})
+
   install(DIRECTORY launch worlds models
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
