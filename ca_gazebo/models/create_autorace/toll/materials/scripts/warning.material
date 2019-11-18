@@ -1,0 +1,15 @@
+material warning25
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture warning25.png
+	scale 0.25 0.25
+      }
+    }
+  }
+}
+

@@ -22,7 +22,7 @@
         <lower>0</lower>
         <upper>1.57</upper>
         <velocity>1</velocity>
-        <effort>1</effort>
+        <effort>5</effort>
       </limit>
       </axis>
     </joint>
@@ -35,6 +35,12 @@
           <size>0.5 0.025 0.07</size>
         </box>
       </geometry>
+      <material>
+        <script>
+          <uri>model://create_autorace/toll/materials/scripts</uri>
+          <name>warning25</name>
+        </script>  
+      </material>
     </visual>
   <collision name='toll_collision'>
       <geometry>
