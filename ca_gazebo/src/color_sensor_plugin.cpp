@@ -1,16 +1,17 @@
 #include "ca_gazebo/color_sensor_plugin.h"
 
-#include <string>
-
-#include "std_msgs/Bool.h"
-#include "std_msgs/Float64.h"
-#include <ros/ros.h>
-
 #include <gazebo/common/Plugin.hh>
-#include "gazebo_plugins/gazebo_ros_camera.h"
 #include <gazebo/sensors/Sensor.hh>
 #include <gazebo/sensors/CameraSensor.hh>
 #include <gazebo/sensors/SensorTypes.hh>
+#include <ros/ros.h>
+
+#include <string>
+#include <vector>
+
+#include "std_msgs/Bool.h"
+#include "std_msgs/Float64.h"
+#include "gazebo_plugins/gazebo_ros_camera.h"
 
 namespace gazebo
 {
@@ -50,18 +51,35 @@ namespace gazebo
     this->depth_ = this->depth;
     this->format_ = this->format;
     this->camera_ = this->camera;
-    this->rvalue_max_ = _sdf->Get<double>("rvalue_max");
-    this->rvalue_min_ = _sdf->Get<double>("rvalue_min");
-    this->gvalue_max_ = _sdf->Get<double>("gvalue_max");
-    this->gvalue_min_ = _sdf->Get<double>("gvalue_min");
-    this->bvalue_max_ = _sdf->Get<double>("bvalue_max");
-    this->bvalue_min_ = _sdf->Get<double>("bvalue_min");
+    this->LoadRGBLimits(_sdf);
     this->publisher_name_ = _sdf->Get<std::string>("PublisherName");
     this->sensor_publisher_ = nh_.advertise<std_msgs::Bool>(this->publisher_name_, 1);
     this->color_percentage_=_sdf->Get<double>("ColorPercentage");
     this->parentSensor->SetActive(true);
 
   }
+
+    void GazeboRosColor::LoadRGBLimits(sdf::ElementPtr _sdf)
+    {
+    this->rgbmax_[0] = _sdf->Get<double>("rvalue_max");
+    this->rgbmax_[1] = _sdf->Get<double>("gvalue_max");
+    this->rgbmax_[2] = _sdf->Get<double>("bvalue_max");
+
+    this->rgbmin_[0] =  _sdf->Get<double>("rvalue_min");   
+    this->rgbmin_[1] = _sdf->Get<double>("gvalue_min");
+    this->rgbmin_[2] = _sdf->Get<double>("bvalue_min");
+    }
+
+    bool GazeboRosColor::InRange(std::vector<int> RGB)
+    {
+      bool R_ok_,G_ok_, B_ok_;
+      R_ok_ = RGB[0] <= this->rgbmax_[0] and RGB[0] >= this->rgbmin_[0];
+      G_ok_ = RGB[1] <= this-> rgbmax_[1] and RGB[1] >= this->rgbmin_[1];
+      B_ok_ = RGB[2] <= this-> rgbmax_[2] and RGB[2] >= this->rgbmin_[2];
+
+      return R_ok_ and G_ok_ and B_ok_;
+    }
+
 
   ////////////////////////////////////////////////////////////////////////////////
   // Update the controller
@@ -70,9 +88,7 @@ namespace gazebo
     const std::string &_format)
   {
 
-    int R,G,B;
-
-    double desired_color_in_pixel_=0, pixel_quant_=0;
+    double goal_color_=0, pixel_quant_=0;
 
     this->sensor_update_time_ = this->parentSensor_->LastUpdateTime();
 
@@ -83,28 +99,28 @@ namespace gazebo
       this->PutCameraData(_image);
       this->PublishCameraInfo();
       this->last_update_time_ = cur_time;
+      std::vector <int> RGB {0 , 0, 0};
+      bool color_detected_;
 
-      bool output_;
-
-      for (int i=0; i<_width*_height*3 ;i=i+3)
+      for (int i=0; i < _width * _height * 3 ; i = i + 3)
       {
-        R = _image[i] ;
-        G = _image[i + 1];
-        B = _image[i + 2];
+       RGB[0] = _image[i];
+       RGB[1] = _image[i + 1];
+       RGB[2] = _image[i + 2];
+       
         pixel_quant_=_width*_height;
 
-        if (R <= this->rvalue_max_ and R > this->rvalue_min_ and G <= this->gvalue_max_ and G > this->gvalue_min_ and B <= this->bvalue_max_ and B > this->bvalue_min_)
+        if (this->InRange(RGB))
         {
-          desired_color_in_pixel_++;
+          goal_color_++;
         }
       }
 
-      output_ = desired_color_in_pixel_/pixel_quant_ > this->color_percentage_;
-      publ->data = output_;
-      publ->data = output_;
+      color_detected_ = goal_color_/pixel_quant_ > this->color_percentage_;
+      publ->data = color_detected_;
       this->sensor_publisher_.publish(publ);  
 
-      desired_color_in_pixel_ = 0;
+      goal_color_ = 0;
       }
     }
   }
