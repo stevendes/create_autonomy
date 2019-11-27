@@ -16,6 +16,10 @@ bumper_sensor = Bumper()
 
 @smach.cb_interface(input_keys=[], output_keys=[], outcomes=['continue', 'avoid_wall'])
 def move_cb(user_data):
+    """
+    Callback for the 'MOVE' state of the robot, sends a Twist message, return 'continue' to iterate
+    or 'avoid_wall' if it detects a virtual wall or a real wall
+    """
     global wall_sensor, bumper_sensor
     rospy.loginfo('Moving')
     move_topic = rospy.Publisher('/create1/cmd_vel/', Twist, queue_size=1)
@@ -31,6 +35,10 @@ def move_cb(user_data):
 
 @smach.cb_interface(input_keys=[], output_keys=[], outcomes=['turn_left', 'turn_right'])
 def avoid_wall_cb(user_data):
+    """
+    Callback for the  'AVOID_WALL' state, moves back the robot and go to the turn states
+    according to what sensor is active
+    """
     global wall_sensor,bumper_sensor
     if wall_sensor or bumper_sensor.is_left_pressed:
         turn = 'left'
@@ -50,6 +58,9 @@ def avoid_wall_cb(user_data):
 
 @smach.cb_interface(input_keys=[], output_keys=[], outcomes=['continue'])
 def turn_left_cb(user_data):
+    """
+    Turns left and then go to the state 'MOVE' to continue the movement
+    """
     rospy.loginfo('Turning')
     turn_topic = rospy.Publisher('/create1/cmd_vel/', Twist, queue_size=1)
     msg = Twist()
@@ -62,6 +73,9 @@ def turn_left_cb(user_data):
 
 @smach.cb_interface(input_keys=[], output_keys=[], outcomes=['continue'])
 def turn_right_cb(user_data):
+    """
+     Turns right and then go to the state 'MOVE' to continue the movement
+    """
     rospy.loginfo('Turning')
     turn_topic = rospy.Publisher('/create1/cmd_vel/', Twist, queue_size=1)
     msg = Twist()
@@ -87,7 +101,7 @@ if __name__ == '__main__':
     try:
         rospy.init_node('key_teleop')
 
-        vwall_subs = rospy.Subscriber("/create1/virtual_wall/",Bool , sensor_callback)
+        v_wall_subs = rospy.Subscriber("/create1/virtual_wall/",Bool , sensor_callback)
         bumper_subs = rospy.Subscriber("/create1/bumper/",Bumper , bumper_callback)
 
         # Create a SMACH state machine
