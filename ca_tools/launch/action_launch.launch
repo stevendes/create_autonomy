@@ -5,13 +5,13 @@
   <arg name="goal_pos_y" default="1.7"/>
 
   <!-- Action Client -->
-  <node pkg="ca_tools" type="action_client.py" name="action_client"/>
+  <node pkg="ca_tools" type="action_client.py" name="follow_line_client"/>
   <param name="get_seconds" type="double" value="$(arg goal_seconds)" />
   <param name="get_pos_x" type="double" value="$(arg goal_pos_x)" />
   <param name="get_pos_y" type="double" value="$(arg goal_pos_y)" />
 
   <!-- Action Server -->
-  <node pkg="ca_tools" type="action_server.py" name="action_server"/>
+  <node pkg="ca_tools" type="action_server.py" name="follow_line_action"/>
 
   <!-- Robot Controller -->
   <node pkg="ca_tools" type="robot_controller.py" name="robot_controller"/>
