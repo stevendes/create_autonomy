@@ -46,32 +46,32 @@ class RobotController:
         """
         self.right_sensor_data = data.data
 
-    def publish_velocity(self, _linear=0, _angular=0):
+    def publish_velocity(self, linear=0, angular=0):
         """
         Method used to publsih the velocity message and move the robot
         """
         vel = Twist()
-        vel.linear.x = _linear
-        vel.angular.z = _angular
+        vel.linear.x = linear
+        vel.angular.z = angular
         self.twist_publisher.publish(vel)
 
     def move_forward(self):
         """
         Method to move the robot forward
         """
-        self.publish_velocity(_linear=self._FORWARD_VEL)
+        self.publish_velocity(linear=self._FORWARD_VEL)
 
     def rotate_left(self):
         """
         Method to move to the left
         """
-        self.publish_velocity(_angular=self._ANGULAR_VEL)
+        self.publish_velocity(angular=self._ANGULAR_VEL)
 
     def rotate_right(self):
         """
         Method to move to the right
         """
-        self.publish_velocity(_angular=-self._ANGULAR_VEL)
+        self.publish_velocity(angular=-self._ANGULAR_VEL)
 
     def solve_stuck(self):
         """
