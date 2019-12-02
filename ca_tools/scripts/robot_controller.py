@@ -32,53 +32,50 @@ class RobotController:
         self.stuck_timer = rospy.Time.now()
         self.stuck_flag = False
 
-        self.r = rospy.Rate(50)
+        self.rate = rospy.Rate(50)
 
     def callback_left(self,data):
         """
-        A callback to get data form the left sensor
+        A callback to get data from the left sensor
         """
         self.left_sensor_data = data.data
 
     def callback_right(self,data):
         """
-        A callback to get data form the right sensor
+        A callback to get data from the right sensor
         """
         self.right_sensor_data = data.data
 
-    def publish_velocity(self, _linear=0, _angular=0):
+    def publish_velocity(self, linear=0, angular=0):
         """
         Method used to publsih the velocity message and move the robot
-        :param _linear: gets
-        :param _angular:
-        :return:
         """
-        _vel = Twist()
-        _vel.linear.x = _linear
-        _vel.angular.z = _angular
-        self.twist_publisher.publish(_vel)
+        vel = Twist()
+        vel.linear.x = linear
+        vel.angular.z = angular
+        self.twist_publisher.publish(vel)
 
     def move_forward(self):
         """
         Method to move the robot forward
         """
-        self.publish_velocity(_linear=self._FORWARD_VEL)
+        self.publish_velocity(linear=self._FORWARD_VEL)
 
-    def move_left(self):
+    def rotate_left(self):
         """
         Method to move to the left
         """
-        self.publish_velocity(_angular=self._ANGULAR_VEL)
+        self.publish_velocity(angular=self._ANGULAR_VEL)
 
-    def move_right(self):
+    def rotate_right(self):
         """
         Method to move to the right
         """
-        self.publish_velocity(_angular=-self._ANGULAR_VEL)
+        self.publish_velocity(angular=-self._ANGULAR_VEL)
 
     def solve_stuck(self):
         """
-        Method that's get called when the 5 seconds passed and the robot still didn't move forward,
+        Method that gets called when the 5 seconds passed and the robot still didn't move forward,
         it forces a forward move
         """
         self.move_forward()
@@ -87,7 +84,7 @@ class RobotController:
 
     def control (self):
         """
-        A method that checks the status of the right and left sensors and based on that call the
+        A method that checks the status of the right and left sensors and based on that calls the
         moving methods
         """
         if self.left_sensor_data and self.right_sensor_data:
@@ -95,7 +92,7 @@ class RobotController:
             self.stuck_flag = False
 
         if not self.left_sensor_data and self.right_sensor_data:
-            self.move_left()
+            self.rotate_left()
             if not self.stuck_flag:
                 self.stuck_timer = rospy.Time.now()
                 self.stuck_flag = True
@@ -103,7 +100,7 @@ class RobotController:
                 self.solve_stuck()
 
         if self.left_sensor_data and not self.right_sensor_data :
-            self.move_right()
+            self.rotate_right()
             if not self.stuck_flag:
                 self.stuck_timer = rospy.Time.now()
                 self.stuck_flag = True
@@ -116,7 +113,7 @@ class RobotController:
         """
         while not rospy.is_shutdown():
             self.control()
-            self.r.sleep()
+            self.rate.sleep()
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@
     #define GAZEBO_ROS_COLOR_SENSOR_HH
     
     #include <string>
-    
+    #include <vector>
     // library for processing camera data for gazebo / ros conversions
     #include <gazebo/plugins/CameraPlugin.hh>
 
@@ -21,10 +21,12 @@
         ~GazeboRosColor();
         ///Load the plugin
         void Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf); 
-        /*
-        param _parent : Pointer to the parent sensor
-        param _sdf : Pointer to the sdf
-        */
+
+        // Put the RGB limits from the SDF to the rgbmax_ and rgbmin_ vectors
+        void LoadRGBLimits(sdf::ElementPtr _sdf);
+
+        // Check if the data received from the sensor is in range with the parameters
+        bool InRange(std::vector<int> RGB);
 
         /// \brief Update the controller
         protected: virtual void OnNewFrame(const unsigned char *_image,
@@ -32,33 +34,20 @@
         unsigned int _depth, const std::string &_format);
 
         private:
-
-        /*
-        param rvalue_max : Max value in R, received from SDF file
-        param rvalue_min : Min value in R, received from SDF file
-        param gvalue_max : Max value in G, received from SDF file
-        param gvalue_min : Min value in G, received from SDF file
-        param bvalue_max : Max value in B, received from SDF file
-        param bvalue_min : Min value in B, received from SDF file
-        param publisher_name : Name of the publisher topic, received from SDF file
-        param color_percentage_: Max value of number of pixels of the same color divided by total number of pixels
-        */
-
-        unsigned int rvalue_max_;
-        unsigned int rvalue_min_;
-        unsigned int gvalue_max_;
-        unsigned int gvalue_min_;
-        unsigned int bvalue_max_;
-        unsigned int bvalue_min_;
-        unsigned int update_rate_; 
+        // vector rgbmax_: used to store the maximun values of the RGB range
+        std::vector<int> rgbmax_ {0, 0, 0};
+        // vector rgbmin_: used to store the minimun values of the RGB range
+        std::vector<int> rgbmin_ {0, 0, 0};  
+        //param publisher_name : Name of the publisher topic, received from SDF file
         std::string publisher_name_;
+        //param publisher_name : Name of the publisher topic, received from SDF file
         float color_percentage_;
-
 
         /// Initialize ROS variables
         ros::NodeHandle nh_;
         ros::Publisher sensor_publisher_;
 
-      };
-    }
-    #endif
+      }; // GazeboRosColor
+    } // gazebo
+    #endif // GAZEBO_ROS_COLOR_SENSOR_HH
+    

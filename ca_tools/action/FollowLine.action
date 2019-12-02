@@ -1,12 +1,23 @@
 # Goal
+#
+# goal_seconds: receives a time in seconds that is the max-time to perform the action, if the robot doesn't reach the goal at least in that time
+# the result is a False
+# goal_position: receives the position in 2D where the robot needs to reach in order to complete the task
 int32 goal_seconds
 geometry_msgs/Point goal_position
 ---
 # Result
+#
+# goal_achieved: a boolean that indicates if the robot gets in the position in time or not
+# total_time: the time that took the robot to complete the task
 bool goal_achieved
 duration total_time
 ---
 # Feedback
-duration current_time
+#
+# current_mission_duration: the that passed since the start of the action
+# accumulated_distance: the distance traveled since the start of the action
+# times_oop: the times that the robot went out-of-track
+duration current_mission_duration
 float64 accumulated_distance
 int32 times_oop
