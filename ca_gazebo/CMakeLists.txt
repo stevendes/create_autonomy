@@ -32,7 +32,7 @@ include_directories(include
 	${Boost_INCLUDE_DIR}
   )
 
-	add_library(create_bumper_plugin src/create_bumper_plugin.cpp)
+  add_library(create_bumper_plugin src/create_bumper_plugin.cpp)
 	add_dependencies(create_bumper_plugin ${catkin_EXPORTED_TARGETS})
 	target_link_libraries(create_bumper_plugin
 				${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
@@ -44,6 +44,9 @@ include_directories(include
 	
 	add_library(toll_plugin src/toll_plugin.cpp)
 	target_link_libraries(toll_plugin ${GAZEBO_LIBRARIES})
+  add_library(model_pose_publisher_plugin src/model_pose_publisher_plugin.cpp)
+  target_link_libraries(model_pose_publisher_plugin
+        ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
   install(DIRECTORY launch worlds models
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
