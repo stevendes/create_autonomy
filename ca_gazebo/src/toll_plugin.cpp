@@ -23,7 +23,7 @@ namespace gazebo
   class ModelPush : public ModelPlugin
   {
     public:
-    ModelPush(): 
+    ModelPush() 
     {
     }
 
